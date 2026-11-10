@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createPayoutBatch } from "@/lib/paypal";
+import { createPayoutBatch, getPayoutBatchStatus } from "@/lib/paypal";
 
 type PayPalPayoutItemResponse = {
   payout_item_id?: unknown;
@@ -9,6 +9,33 @@ type PayPalPayoutItemResponse = {
 
 function asString(value: unknown): string | null {
   return typeof value === "string" ? value : null;
+}
+
+export async function GET(req: Request) {
+  const batchId = new URL(req.url).searchParams.get("batchId");
+  if (!batchId) {
+    return NextResponse.json({ error: "batchId is required." }, { status: 400 });
+  }
+  try {
+    const result = await getPayoutBatchStatus(batchId);
+    return NextResponse.json({
+      batchId: result.batch_header?.payout_batch_id ?? batchId,
+      status: result.batch_header?.batch_status ?? null,
+      items: ((result.items ?? []) as PayPalPayoutItemResponse[]).map(
+        (item) => ({
+          payoutItemId: asString(item.payout_item_id),
+          receiver: asString(item.payout_item?.receiver),
+          amount: asString(item.payout_item?.amount?.value),
+          status: asString(item.transaction_status),
+        })
+      ),
+    });
+  } catch (err) {
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : "Payout status failed." },
+      { status: 502 }
+    );
+  }
 }
 
 export async function POST(req: Request) {

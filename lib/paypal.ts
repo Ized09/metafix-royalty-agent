@@ -33,6 +33,21 @@ export type PayoutItem = {
   note: string;
 };
 
+export async function getPayoutBatchStatus(batchId: string) {
+  const token = await getAccessToken();
+  const res = await fetch(
+    `${apiBase}/v1/payments/payouts/${encodeURIComponent(batchId)}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(
+      `PayPal payout status failed: ${res.status} ${JSON.stringify(data)}`
+    );
+  }
+  return data;
+}
+
 export async function createPayoutBatch(items: PayoutItem[]) {
   const token = await getAccessToken();
   const senderBatchId = `metafix-${Date.now()}`;

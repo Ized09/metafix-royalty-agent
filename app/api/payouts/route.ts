@@ -5,6 +5,7 @@ type PayPalPayoutItemResponse = {
   payout_item_id?: unknown;
   payout_item?: { receiver?: unknown; amount?: { value?: unknown } };
   transaction_status?: unknown;
+  errors?: unknown;
 };
 
 function asString(value: unknown): string | null {
@@ -27,6 +28,7 @@ export async function GET(req: Request) {
           receiver: asString(item.payout_item?.receiver),
           amount: asString(item.payout_item?.amount?.value),
           status: asString(item.transaction_status),
+          errors: item.errors ?? null,
         })
       ),
     });

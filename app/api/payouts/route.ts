@@ -19,6 +19,7 @@ export async function GET(req: Request) {
   }
   try {
     const result = await getPayoutBatchStatus(batchId);
+    const raw = new URL(req.url).searchParams.get("raw") === "1";
     return NextResponse.json({
       batchId: result.batch_header?.payout_batch_id ?? batchId,
       status: result.batch_header?.batch_status ?? null,
@@ -31,6 +32,7 @@ export async function GET(req: Request) {
           errors: item.errors ?? null,
         })
       ),
+      ...(raw ? { raw: result } : {}),
     });
   } catch (err) {
     return NextResponse.json(

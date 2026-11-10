@@ -24,9 +24,9 @@ export const DEMO_STATEMENT: RoyaltyStatement = {
   totalUsd: 1240.0,
   currency: "USD",
   collaborators: [
-    { name: "Adaeze", role: "Artist", splitPercent: 50, sandboxEmail: "adaeze-demo@example.com" },
-    { name: "Tunde", role: "Producer", splitPercent: 30, sandboxEmail: "tunde-demo@example.com" },
-    { name: "Chiamaka", role: "Songwriter", splitPercent: 20, sandboxEmail: "chiamaka-demo@example.com" },
+    { name: "Adaeze", role: "Artist", splitPercent: 50, sandboxEmail: "sb-clm2r31330198@personal.example.com" },
+    { name: "Tunde", role: "Producer", splitPercent: 30, sandboxEmail: "sb-vaopz43934503@personal.example.com" },
+    { name: "Chiamaka", role: "Songwriter", splitPercent: 20, sandboxEmail: "sb-uwbvy53837083@personal.example.com" },
   ],
   note: "Demo data. Fictional track, artist, and amounts.",
 };

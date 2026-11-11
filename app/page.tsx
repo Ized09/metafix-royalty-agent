@@ -87,6 +87,25 @@ export default function Page() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Payout failed.");
       setReceipt(data);
+      // Poll the batch until it reaches a final state, so the receipts
+      // show the real outcome (SUCCESS / DENIED) instead of PENDING.
+      if (data.batchId) {
+        const terminal = new Set(["SUCCESS", "DENIED", "FAILED"]);
+        for (let i = 0; i < 24; i++) {
+          await new Promise((r) => setTimeout(r, 5000));
+          try {
+            const s = await fetch(
+              `/api/payouts?batchId=${encodeURIComponent(data.batchId)}`
+            );
+            const sd = await s.json();
+            if (!s.ok) break;
+            setReceipt(sd);
+            if (terminal.has(sd.status)) break;
+          } catch {
+            break;
+          }
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Payout failed.");
     } finally {
